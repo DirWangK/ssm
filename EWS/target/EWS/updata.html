@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="layui3.4/css/layui.css"/>
+    <script type="text/javascript" src="jquery3.4.1/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="layui3.4/layui.all.js"></script>
+    <script type="text/javascript" src="js/vcode.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            createCode(4);
+            $("#checkCode").click(function () {
+                createCode(4);
+            });
+        });
+        function openEquInfoEdit() {
+
+            layer.open({
+                type: 1,
+                title: "修改用户信息",
+                btn: ["确认修改", "取消"],
+                // content: $("#editEquInfo").html(),
+                area: ['400px', '350px'],
+                yes:function(index) {
+                    layer.closeAll();
+                    $.ajax({
+                        url: "equ/openEquInfoEdit.do",
+                        data: {
+                            "snumber": $("#snumber").val(),
+                            "iname": $("#iname").val(),
+                            "itype": $("#itype").val()
+                        }, method: "post",
+                        success: function (result) {//这是回调函数
+                            layer.alert("修改成功！");
+                            window.location.href = "admin.html";
+                            // layui.table.reload("equInfoTable");
+                        },
+                        error: function () {
+                            layer.msg("请求服务器失败!");
+                        }
+
+                    });
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+序列号：<input type="text" id="snumber" name="snumber"><br>
+设备名：<input type="text" id="iname" name="iname"><br>
+设备类型：<input type="text" id="itype" name="itype"><br>
+<div align="center" class="layui-form-item">-->
+    <a href="javascript:openEquInfoEdit()" class="layui-btn layui-btn-normal">确认添加</a>
+    <a href="#" class="layui-btn layui-btn-danger">取消</a>
+</div>
+<table class="layui-table" id="equInfoList" lay-filter="equTable">
+</table>
+</body>
+</html>

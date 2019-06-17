@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设备管理</title>
+    <link rel="stylesheet" href="layui3.4/css/layui.css"/>
+    <script type="text/javascript" src="jquery3.4.1/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="layui3.4/layui.all.js"></script>
+
+    <script type="text/javascript">
+        $(function () {
+            loadUserEquipmentDate();
+        });
+        function add(){
+            $("#mainFrame").load("add.html");
+        }
+        function updata(){
+            $("#mainFrame").load("updata.html");
+        }
+
+        // function addEquInfoById(snumber,iname,itype) {
+        //     // var reg = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/;
+        //     // var email=jQuery("#email").val();
+        //     // if(!reg.test(email)){
+        //     //     layer.tips("Email输入有误，请检查!", "#email", {time: 3000, tips: [2, "#FF0000"]});
+        //     //     return;
+        //     // }
+        //     layer.open({
+        //         type: 1,
+        //         title: "添加用户信息",
+        //         btn: ["确认添加", "取消"],
+        //         content: $("#editEquInfo").html(),
+        //         area: ['400px', '350px'],
+        //         yes:function(index) {
+        //             layer.closeAll();
+        //             $.ajax({
+        //                 url: "equ/addEquInfoById.do",
+        //                 data: {
+        //                     "snumber": $("#snumber").val(),
+        //                     "iname": $("#iname").val(),
+        //                     "itype": $("#itype").val()
+        //                 }, method: "post",
+        //                 success: function (result) {//这是回调函数
+        //                     layer.alert("添加成功！");
+        //                     window.location.href = "admin.html";
+        //                     layui.table.reload("equInfoTable");
+        //                 },
+        //                 error: function () {
+        //                     layer.msg("请求服务器失败!");
+        //                 }
+        //
+        //             });
+        //         }
+        //     });
+        // }
+
+
+        function deleteEquInfoById(e_id) {
+            layer.confirm("是否真的要删除本记录?", {icon: 3, title: "警告"}, function (index) {
+                layer.closeAll();
+                $.ajax({
+                    url: "equa/deleteEquInfoById.do",
+                    method: "post",
+                    data: {"e_id": e_id},
+                    success: function (result) {
+                        //alert(result);
+                        if (JSON.parse(result) == "success") {
+                            //  $("#userInfoList").reload();
+
+                            layer.msg("删除成功!");
+                            layui.table.reload("equInfoTable");
+                        } else {
+                            layer.msg("删除失败!");
+                        }
+
+                    },
+                    error: function () {
+                        layui.msg("请求服务器失败!");
+                    }
+                });
+
+            });
+        }
+
+        function openEquInfoEdit() {
+            layer.open({
+                type: 1,
+                title: "修改用户信息",
+                btn: ["确认修改", "取消"],
+                content: $("#editEquInfo").html(),
+                area: ['400px', '350px'],
+                yes:function(index) {
+                    layer.closeAll();
+                    $.ajax({
+                        url: "equ/openEquInfoEdit.do",
+                        data: {
+                            "snumber": $("#snumber").val(),
+                            "iname": $("#iname").val(),
+                            "itype": $("#itype").val()
+                        }, method: "post",
+                        success: function (result) {//这是回调函数
+                            layer.alert("修改成功！");
+                            window.location.href = "admin.html";
+                            layui.table.reload("equInfoTable");
+                        },
+                        error: function () {
+                            layer.msg("请求服务器失败!");
+                        }
+
+                    });
+                }
+            });
+        }
+
+        function queryAllEqu(itype) {
+            layer.open({
+                type: 1,
+                title: "查找设备信息",
+                btn: ["确认查找", "取消"],
+                area: ['400px', '350px'],
+                yes:function(index) {
+                    layer.closeAll();
+                    $.ajax({
+                        url: "equ/queryAllEqu.do",
+                        method: "post",
+                        data: {"itype": itype},
+                        success: function (result) {
+                            //alert(result);
+                            if (JSON.parse(result) == "success") {
+                                //  $("#userInfoList").reload();
+
+                                layer.msg("查询成功!");
+                                layui.table.reload("equInfoTable");
+                            } else {
+                                layer.msg("查询失败!");
+                            }
+                        }
+
+
+                    });
+                }
+
+            });
+
+        }
+
+        function loadUserEquipmentDate() {
+            var table = layui.table;
+            var util = layui.util;
+            table.render({
+                toolbar: "#toolbar",
+                elem: "#equInfoList",
+                url: "equ/findAllEqu.do",
+                title: "设备信息表",
+                id: "equInfoTable",
+                limit: 8,
+                page: true,
+                event: true,
+                size: "md",
+                limits: [10, 20, 50, 100],
+                loading: true,
+                cols:
+                    [
+                        [{
+                            field: "e_id",
+                            title: "ID",
+                            type: "checkbox"
+                        },
+                            {
+                                field: "snumber",
+                                title: "序列号",
+                                edit: true,
+                                type: "numbers",
+                                width: 20
+                            },
+                            {
+                                field: "iname",
+                                title: "设备名",
+                                edit: true,
+                                align: "center",
+                                width: 80
+                            },
+                            {
+                                field: "itype",
+                                title: "设备类型",
+                                edit: true,
+                                align: "center",
+                                width: 100,
+                                templet: function (row) {
+                                    if (row.itype == '治疗仪')
+                                        return "治疗仪";
+                                    if (row.itype == '检测仪')
+                                        return "检测仪";
+                                    if (row.itype == '器械')
+                                        return "器械";
+                                }
+                            },
+                            {
+                                field: "iproducetime",
+                                title: "生产时间",
+                                align: "center",
+                                width: 90
+                            },
+                            {
+                                field: "istarttime",
+                                title: "开始使用时间",
+                                align: "center",
+                                width: 130
+                            },
+                            {
+                                field: "repaircycle",
+                                title: "检修周期",
+                                align: "center",
+                                width: 90
+                            },
+                            {
+                                field: "lastrepairTime",
+                                title: "最新一次检修时间",
+                                align: "center",
+                                width: 180,
+                                templet: function (row) {
+                                    return util.toDateString(row.rlastrepairTime, "yyyy-MM-dd HH:mm:ss");
+                                }
+                            },
+                            {
+                                field: "istate",
+                                title: "设备状态",
+                                align: "center",
+                                width: 90
+                            },
+                            {
+                                field: "manu",
+                                title: "生产厂商",
+                                align: "center",
+                                width: 90
+                            },
+                            {
+                                field: "tel",
+                                title: "厂商联系电话",
+                                align: "center",
+                                width: 130
+                            },
+                            {
+                                field: "e_id",
+                                title: "操作",
+                                align: "center",
+                                width: 80,
+                                templet: function (row) {
+                                    /* var arr = new Array();
+                                arr[0] = row.id;
+                                arr[1] = row.uname;
+                                arr[2] = row.email;
+                                arr[3] = row.role;*/
+                                    var edit = '<a href="javascript:openEquInfoEdit(' + "'" + row.snumber + "','" + row.iname + "','" + row.itype + '\');"   title="编辑">' +
+                                        "<span style='font-size: 25px;color:blue' class='layui-icon layui-icon-util'></span></a>"
+                                    var del = '<a href="javaScript:deleteEquInfoById(' + row.e_id + ')"  title="删除">' +
+                                        "<span style='font-size: 25px;color: red' class='layui-icon layui-icon-delete'></span></a>"
+                                    return edit + "|" + del;
+                                }
+                            }
+                        ]
+                    ]
+            });
+            layui.table.on("toolbar(equTable)", function (rs) {
+                var event = rs.event;
+                // if (event == "add") {
+                //     layer.open({
+                //         type: 1,
+                //         title: "添加用户信息",
+                //         btn: ["确认添加", "取消"],
+                //         content: $("#editEquInfo").html(),
+                //         area: ['400px', '350px'],
+                //         yes:function(index) {
+                //             layer.closeAll();
+                //             $.ajax({
+                //                 url: "equ/addEquInfoById.do",
+                //                 data: {
+                //                     "snumber": $("#snumber").val(),
+                //                     "iname": $("#iname").val(),
+                //                     "itype": $("#itype").val()
+                //                 }, method: "post",
+                //                 success: function (result) {//这是回调函数
+                //                     layer.alert("添加成功！");
+                //                     layui.table.reload("equInfoTable");
+                //                 },
+                //                 error: function () {
+                //                     layer.msg("请求服务器失败!");
+                //                 }
+                //
+                //             });
+                //         }
+                //     });
+                // }
+
+                if (event == "delete") {
+                    var list = layui.table.checkStatus("equInfoTable").data;
+                    if (list.length == 0) {
+                        layer.msg("请选择一条数据");
+                    } else {
+                        layer.confirm("是否删除选中的数据?", {btn: ["确定", "取消"]}, function () {
+                            layer.closeAll();
+                            var arr = new Array();
+                            $.each(list, function (index, row) {
+                                arr[index] = row.e_id;
+                            });
+                            $.ajax({
+                                url: "equ/deleteEquInfoById.do",
+                                data: {"id": arr.join(",").toString()},
+                                method: "post",
+                                success: function (result) {
+                                    if (JSON.parse(result) == "success") {
+                                        layer.msg("删除成功！");
+                                        layui.table.reload("equInfoTable");
+                                    } else
+                                        layer.msg("删除失败！");
+
+                                },
+                                error: function () {
+                                    layer.msg("请求服务器失败?");
+                                }
+                            });
+                        })
+                    }
+                }
+                if (event == "update") {
+                    layer.open({
+                        type: 1,
+                        title: "修改用户信息",
+                        btn: ["确认修改", "取消"],
+                        content: $("#editEquInfo").html(),
+                        area: ['400px', '350px'],
+                        yes:function(index) {
+                            layer.closeAll();
+                            $.ajax({
+                                url: "equ/openEquInfoEdit.do",
+                                data: {
+                                    "snumber": $("#snumber").val(),
+                                    "iname": $("#iname").val(),
+                                    "itype": $("#itype").val()
+                                }, method: "post",
+                                success: function (result) {//这是回调函数
+                                    layer.alert("添加成功！");
+                                    layui.table.reload("equInfoTable");
+                                },
+                                error: function () {
+                                    layer.msg("请求服务器失败!");
+                                }
+
+                            });
+                        }
+                    });
+                }
+                if (event == "query") {
+                    var list = layui.table.checkStatus("equInfoTable").data;
+                    if (list.length == 0) {
+                        layer.msg("请输入要查询的信息");
+                    } else {
+                        layer.confirm("是否查询信息?", {btn: ["确定", "取消"]}, function () {
+                            layer.closeAll();
+                            var arr = new Array();
+                            $.each(list, function (index, row) {
+                                arr[index] = row.itype;
+                            });
+                            $.ajax({
+                                url: "equ/queryAllEqu.do",
+                                data: {"itype": arr.join(",").toString()},
+                                method: "post",
+                                success: function (result) {
+                                    if (JSON.parse(result) == "success") {
+                                        layer.msg("查找成功！");
+                                        layui.table.reload("equInfoTable");
+                                    } else
+                                        layer.msg("查找失败！");
+
+                                },
+                                error: function () {
+                                    layer.msg("请求服务器失败?");
+                                }
+                            });
+                        })
+                    }
+                }
+            });
+        }
+
+
+    </script>
+</head>
+<body>
+<div class="layui-elem-quote">
+    设备管理功能
+</div>
+<script type="text/html" id="toolbar">
+    <a href="javascript:add()" class="layui-btn layui-btn-warm"><span
+            class="layui-icon"></span>添加设备</a>
+    <a href="javascript:void(0)" class="layui-btn layui-btn-warm" lay-event="delete"><span
+            class="layui-icon layui-icon-delete"></span> 删除设备</a>
+    <input class="layui-input-block" type="text" placeholder="请输入要查询的信息">
+    <a href="" class="layui-btn layui-btn-warm">
+        <span class="layui-icon layui-icon-search"></span></a>
+</script>
+<table class="layui-table" id="equInfoList" lay-filter="equTable">
+</table>
+<div align="center" id="editEquInfo" style="display: none;width: 300px">
+    <br>
+    <center>
+        <h2 id="lbl_title">添加（修改）设备信息</h2>
+    </center>
+    <hr>
+    <form class="layui-form" id="form1">
+        <input type="hidden" id="id">
+        <div class="layui-form-item">
+            <label class="layui-form-label">序列号</label>
+            <div class="layui-input-inline">
+                <input type="text" id="snumber" name="snumber" lay-verify="snumber" autocomplete="off"
+                       placeholder="请输入序列号" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">设备名</label>
+            <div class="layui-input-inline">
+                <input type="text" id="iname" name="iname" lay-verify="iname" autocomplete="off"
+                       placeholder="请输入设备名" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">类型</label>
+            <div class="layui-input-inline">
+                <input type="text" id="itype" name="itype" lay-verify="itype" autocomplete="off"
+                       placeholder="请输入设备类型" class="layui-input">
+                <!--                       <select id="itype"  lay-verify="itype" autocomplete="off">-->
+                <!--                           <option value="治疗仪">治疗仪</option>-->
+                <!--                           <option value="检测仪">检测仪</option>-->
+                <!--                           <option value="器械">器械</option>-->
+                <!--                       </select>-->
+            </div>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

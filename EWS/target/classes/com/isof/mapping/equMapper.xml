@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.isof.mapping.equMapper">
+    <select id="login" parameterType="map" resultType="map">
+        select * from tb_equ where uname=#{uname}
+    </select>
+    <select id="logina" parameterType="int" resultType="map">
+        select snumber from tb_equ where e_id=#{e_id}
+    </select>
+    <update id="updateLoginTime" parameterType="int">
+        update tb_equ set latestrepairtime=now() where e_id=#{e_id}
+    </update>
+    <insert id="register" parameterType="map">
+      insert into tb_equ(id,uname,upwd,email,registerTime,lastLoginTime)
+       values(null,#{uname},md5(#{upwd}),#{email},'employee',now(),now());
+    </insert>
+    <insert id="change" parameterType="map">
+      insert into tb_equ(snumber,iname,itype,dept)
+       values(#{snumber},#{iname},#{itype},#{dept});
+    </insert>
+    <insert id="addEquInfoById" parameterType="map" >
+        insert into tb_equ(snumber,iname,itype)
+        values(#{snumber},#{iname},#{itype})
+    </insert>
+    <select id="findAllEqu" parameterType="map" resultType="map">
+        select * from tb_equ limit #{page},#{pageSize}
+    </select>
+    <select id="findEquCount" resultType="map">
+        SELECT count(*) as `count` from tb_equ;
+    </select>
+    <delete id="deleteEquInfoById" parameterType="int">
+        delete from tb_equ where e_id=#{e_id}
+    </delete>
+
+    <select id="findAllEquRep" parameterType="map" resultType="map">
+        select * from tb_equ limit #{page},#{pageSize};
+    </select>
+    <select id="findAllEquNeedRep" parameterType="map" resultType="map">
+        select * from tb_equ where datediff(now(),latestrepairtime)>substring_index(repaircycle, '天', 1) limit #{page},#{pageSize};
+    </select>
+    <select id="findEquRepCount" resultType="map">
+        SELECT count(*) as `count` from tb_equ;
+    </select>
+
+    <update id="creatNeedRepView">
+            CREATE OR REPLACE VIEW needrep AS select * from tb_equ where datediff(now(),latestrepairtime)>substring_index(repaircycle, '天', 1);
+    </update>
+
+    <select id="findEquNeedRepCount" resultType="map">
+        SELECT count(*) as `count` from needrep;
+    </select>
+
+    <update id="updateLatestrepairtime" parameterType="string">
+        update tb_equ set latestrepairtime=now() where snumber=#{snumber};
+    </update>
+
+    <insert id="equInsRepLog" parameterType="map">
+        INSERT INTO tb_rep(snumber,iname,itype,dept,iproducetime,pastrepair,reptime,repairpeople) VALUES(#{snumber}, #{iname}, #{itype}, #{dept}, #{iproducetime},  #{latestrepairtime},NOW(),#{repairpeople}) ON DUPLICATE KEY UPDATE snumber=#{snumber};
+    </insert>
+
+    <select id="findAllEquRepLog" parameterType="map" resultType="map">
+        select * from tb_rep limit #{page},#{pageSize};
+    </select>
+    <select id="findEquRepCountLog" resultType="map">
+        SELECT count(*) as `count` from tb_rep;
+    </select>
+
+    <delete id="deleteRepLogInfoBySnumber" parameterType="string">
+        DELETE FROM tb_rep WHERE snumber=#{snumber};
+    </delete>
+
+    <select id="equTotal" resultType="map">
+      select case
+         when itype='分析仪' then '分析仪'
+         when itype='器械' then '器械'
+         when itype='检测仪' then '检测仪'
+          when itype='治疗仪' then '治疗仪'
+          end as itype,
+      count(*) as count from tb_equ group by itype;
+        /*select case
+        when role='employee' then '部门员工'
+        when role='admin' then '管理员'
+        when role='checker' then '检修员'
+        end as role
+        ,count(*) as count from tb_user GROUP BY role;*/
+    </select>
+    <select id="equTotal1" resultType="map">
+        select case
+        when dept='化验科' then '化验科'
+        when dept='呼吸中医科' then '呼吸中医科'
+        when dept='器官移植中心' then '器官移植中心'
+        when dept='心血管介入科' then '心血管介入科'
+        when dept='急救中心' then '急救中心'
+        when dept='放疗科' then '放疗科'
+        when dept='甲亢中心' then '甲亢中心'
+        when dept='皮肤科' then '皮肤科'
+        when dept='神经内科' then '神经内科'
+        when dept='精神科' then ' 精神科'
+        when dept='肠胃科' then '肠胃科'
+        when dept='肿瘤科' then '肿瘤科'
+        when dept='血透中心' then '血透中心'
+        end as dept,
+        count(*) as count from tb_equ group by dept;
+    </select>
+    <select id="equTotal2" resultType="map">
+        select iname,count(*) as count from tb_equ group by iname;
+    </select>
+    <select id="equTotal3" resultType="map">
+       select repaircycle, count(*) as count from tb_equ group by repaircycle;
+    </select>
+    <select id="equTotal4" resultType="map">
+        select manu, count(*) as count from tb_equ group by manu;
+    </select>
+
+
+</mapper>

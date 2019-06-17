@@ -1,0 +1,104 @@
+<!--<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="layui3.4/css/layui.css"/>
+    <link rel="stylesheet" href="css/vcode.css"/>
+    <script type="text/javascript" src="jquery3.4.1/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="layui3.4/layui.all.js"></script>
+</head>
+<body>
+<div class="head">
+    <img alt="选择头像" src='${basePath }/manage/getPhoto.do?id=<%=session.getAttribute("Id") %>' style="width: 100px;
+    height:100px;
+    border-radius:50%;
+    margin: auto;"/></div>
+<input type="file" id="fileName" name="fileName" />
+
+<input type="submit" value="上传"/></br>
+
+</body>
+</html>
+-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>upload模块快速使用</title>
+    <link rel="stylesheet" href="layui3.4/css/layui.css"/>
+    <script type="text/javascript" src="jquery3.4.1/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="layui3.4/layui.all.js"></script>
+    <script type="text/javascript" src="js/vcode.js"></script>
+
+</head>
+<body>
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+    <legend>图片上传</legend>
+</fieldset>
+
+<div class="layui-upload">
+    <button type="button" class="layui-btn" id="test1">上传图片</button>
+    <div class="layui-upload-list">
+        <img class="layui-upload-img" id="demo1">
+        <p id="demoText"></p>
+    </div>
+</div>
+<!--https://www.layui.com/doc/modules/upload.html
+https://www.cnblogs.com/ryelqy/p/10104168.html
+https://www.cnblogs.com/yysbolg/p/9117101.html
+https://www.layui.com/demo/upload.html
+-->
+<script src="layui3.4/layui.js"></script>
+<script>
+    layui.use('upload', function () {
+        var upload = layui.upload;
+
+        //执行实例
+        var uploadInst = upload.render({
+            elem: '#test1', //绑定元素
+            url: '/upload/', //上传接口
+
+            auto: false, //选择文件后不自动上传
+            bindAction: '#testListAction', //指向一个按钮触发上传
+            choose: function (obj) {
+                //将每次选择的文件追加到文件队列
+                var files = obj.pushFile();
+
+                //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
+                obj.preview(function (index, file, result) {
+                    console.log(index); //得到文件索引
+                    console.log(file); //得到文件对象
+                    console.log(result); //得到文件base64编码，比如图片
+
+                    //obj.resetFile(index, file, '123.jpg'); //重命名文件名，layui 2.3.0 开始新增
+
+                    //这里还可以做一些 append 文件列表 DOM 的操作
+
+                    //obj.upload(index, file); //对上传失败的单个文件重新上传，一般在某个事件中使用
+                    //delete files[index]; //删除列表中对应的文件，一般在某个事件中使用
+                });
+            },
+            done: function (res) {
+                //上传完毕回调
+                //假设code=0代表上传成功
+                if(res.code == 0){
+                    //do something （比如将res返回的图片链接保存到表单的隐藏域）
+                }
+                //获取当前触发上传的元素，一般用于 elem 绑定 class 的情况，注意：此乃 layui 2.1.0 新增
+                var item = this.item;
+                //文件保存失败
+                //do something
+
+            }
+            , error: function () {
+                //请求异常回调
+                layer.msg("上传失败");
+            }
+        });
+    });
+</script>
+</body>
+</html>

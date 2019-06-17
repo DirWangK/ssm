@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="layui3.4/css/layui.css"/>
+    <script type="text/javascript" src="jquery3.4.1/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="layui3.4/layui.all.js"></script>
+    <script type="text/javascript" src="js/vcode.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            createCode(4);
+            $("#checkCode").click(function () {
+                createCode(4);
+            });
+        });
+        function addEquInfoById() {
+            $.ajax({
+                url: "equa/addEquInfoById.do",
+                data: {
+                    "snumber": $("#snumber").val(),
+                    "iname": $("#iname").val(),
+                    "itype": $("#itype").val()
+                }, method: "post",
+                success: function (result) {//这是回调函数
+                    layer.alert("添加成功！");
+                    window.location.href = "admin.html";
+                    // layui.table.reload("equInfoTable");
+                },
+                error: function () {
+                    layer.msg("请求服务器失败!");
+                }
+
+            });
+
+        }
+    </script>
+</head>
+<body>
+<form class="layui-form" action="">
+    <div class="layui-input-inline">
+        <label class="layui-form-label">序列号：</label>
+        <div class="layui-input-block">
+            <input type="text" id="snumber" name="snumber" lay-verify="title" autocomplete="off" placeholder="请输入序列号" class="layui-input" >
+        </div>
+    </div>
+    <br>
+    <div class="layui-input-inline">
+        <label class="layui-form-label">设备名：</label>
+        <div class="layui-input-block">
+            <input type="text" id="iname" name="iname" lay-verify="required" placeholder="请输入设备名" autocomplete="off" class="layui-input" >
+        </div>
+    </div>
+    <br>
+    <div class="layui-input-inline">
+        <label class="layui-form-label">设备类型：</label>
+        <div class="layui-input-block">
+            <input type="text" id="itype" name="itype" lay-verify="required" placeholder="请输入设备名" autocomplete="off" class="layui-input" >
+        </div>
+    </div>
+    <br>
+    <div class="layui-input-inline">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="javascript:addEquInfoById()" class="layui-btn layui-btn-normal">确认添加</a>
+        <a href="#" class="layui-btn layui-btn-danger">取消</a>
+    </div>
+    <table class="layui-table" id="equInfoList" lay-filter="equTable">
+    </table>
+
+</form>
+</body>
+</html>

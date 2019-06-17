@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>个人中心</title>
+    <link rel="stylesheet" href="layui3.4/css/layui.css"/>
+    <script type="text/javascript" src="jquery3.4.1/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="layui3.4/layui.all.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            loadUserData();
+            if (sessionStorage.getItem("uname") == null) {
+                layer.msg("非法用户，请登录!");
+                //setInterval("window.location.href=\"index.html\"",3000);
+            } else {
+                var uname = sessionStorage.getItem("uname");
+                $("#loginName").html(uname);
+            }
+        });
+
+
+    </script>
+</head>
+<body>
+
+
+<table border="0" style="margin: auto;size: A3;line-height: 50px">
+    <caption>个人信息</caption>
+    <th id="uname">
+    <td>用户名：</td>
+    <td></td>
+    </th>
+    <th id="email">
+    <td>邮箱：</td>
+    <td></td>
+    </th>
+    <th id="role">
+    <td>用户身份：</td>
+    <td></td>
+    </th>
+    <th id="registerTime">
+    <td>注册日期：</td>
+    <td></td>
+    </th>
+    <th id="lastLoginTime">
+    <td>上次登录日期：</td>
+    <td></td>
+    </th>
+</table>
+</body>
+</html>

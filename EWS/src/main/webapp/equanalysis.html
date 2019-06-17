@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="layui3.4/css/layui.css"/>
+    <script type="text/javascript" src="jquery3.4.1/jquery-3.4.1.js"></script>
+    <script type="text/javascript" src="layui3.4/layui.all.js"></script>
+    <script type="text/javascript" src="echarts/echarts.min.js"></script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            bar();
+        });
+
+        function bar() {
+            $.ajax({
+                url: "equ/equTotal.do",
+                success: function (data) {
+                    var result = JSON.parse(data);
+                    var mychart = echarts.init(document.getElementById("bar"));
+                    var mychart2 = echarts.init(document.getElementById("pie"));
+                    var mychart3 = echarts.init(document.getElementById("rad"));
+                    var mychart4 = echarts.init(document.getElementById("fun"));
+                    var mychart5 = echarts.init(document.getElementById("fun3"));
+                    var mychart6 = echarts.init(document.getElementById("item1"));
+                    // 指定图表的配置项和数据
+                    var option = {
+                        title: {
+                            text: '不同类型医疗设备数量柱状图'
+                        },
+                        tooltip: {},
+                        legend: {
+                            data: ['数量']
+                        },
+                        xAxis: {
+                            data: result.itypeList
+                        },
+                        yAxis: {},
+                        series: [{
+                            name: '数量',
+                            type: 'bar',
+                            data: result.countList
+                        }]
+                    };
+                    var option2 = {
+                        title: {
+                            text: '不同类型医疗设备饼图',
+                            x: 'center'
+                        },
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            left: 'left',
+                            data: result.itypeList
+//                                ['分析仪', '器械', '检测仪', '治疗仪']
+                        },
+                        series: [
+                            {
+                                name: '不同类型医疗设备所占比例',
+                                type: 'pie',
+                                radius: '55%',
+                                center: ['50%', '60%'],
+                                data: [
+                                    {value:result.countList[0],name:result.itypeList[0]},
+                                    {value:result.countList[1],name:result.itypeList[1]},
+                                    {value:result.countList[2],name:result.itypeList[2]},
+                                    {value:result.countList[3],name:result.itypeList[3]},
+                                   /* {value: 2, name: '分析仪'},
+                                    {value: 7, name: '器械'},
+                                    {value: 12, name: '检测仪'},
+                                    {value: 10, name: '治疗仪'},*/
+                                ],
+                                itemStyle: {
+                                    emphasis: {
+                                        shadowBlur: 10,
+                                        shadowOffsetX: 0,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                }
+                            }
+                        ]
+                    };
+                    var option3 =
+                        {
+                        title:
+                            {
+                            text: '不同类型医疗设备多雷达图'
+                          },
+                        tooltip:
+                            {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            x: 'center',
+                            data:['类型']
+                        },
+                            radar: [
+                                {
+                                    indicator: [
+                                        /*{text: '分析仪', max: 20},
+                                        {text: '器械', max:20},
+                                        {text: '检测仪', max: 20},
+                                        {text: '治疗仪', max:20}*/
+                                        {text: result.itypeList[0], max: 20},
+                                        {text: result.itypeList[1], max:20},
+                                        {text: result.itypeList[2], max: 20},
+                                        {text: result.itypeList[3], max:20}
+                                    ],
+                                    center: ['75%','40%'],
+                                    radius: 80
+                                },
+                            ],
+                            series: [
+                                {
+                                    type: 'radar',
+                                    tooltip: {
+                                        trigger: 'item'
+                                    },
+                                    itemStyle: {normal: {areaStyle: {type: 'default'}}},
+                                    data: [
+                                        {
+                                            value:result.countList ,
+                                               /* [1,7,12,10],*/
+                                            name: '类型'
+                                        }
+                                    ]
+                                },
+                            ]
+                        };
+                   var  option4 = {
+                        title: {
+                            text: '不同类型医疗设备漏斗图',
+                            subtext: '纯属虚构',
+                            left: 'left',
+                            top: 'bottom'
+                        },
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: "{a} <br/>{b} : {c}%"
+                        },
+                        toolbox: {
+                            show: true,
+                            orient: 'vertical',
+                            top: 'center',
+                            feature: {
+                                dataView: {readOnly: false},
+                                restore: {},
+                                saveAsImage: {}
+                            }
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            left: 'left',
+                            data: result.itypeList
+                        },
+                        calculable: true,
+                        series: [
+                            {
+                                name: '漏斗图',
+                                type: 'funnel',
+                                width: '40%',
+                                height: '45%',
+                                left: '5%',
+                                top: '50%',
+                                funnelAlign: 'right',
+
+                                center: ['25%', '25%'],  // for pie
+
+                                data:[
+                                    {value:result.countList[0],name:result.itypeList[0]},
+                                    {value:result.countList[1],name:result.itypeList[1]},
+                                    {value:result.countList[2],name:result.itypeList[2]},
+                                    {value:result.countList[3],name:result.itypeList[3]},
+                                ]
+                            },
+                            {
+                                name: '金字塔',
+                                type:'funnel',
+                                width: '40%',
+                                height: '45%',
+                                left: '5%',
+                                top: '5%',
+                                sort: 'ascending',
+                                funnelAlign: 'right',
+
+                                center: ['25%', '75%'],  // for pie
+
+                                data:[
+                                    {value:result.countList[0],name:result.itypeList[0]},
+                                    {value:result.countList[1],name:result.itypeList[1]},
+                                    {value:result.countList[2],name:result.itypeList[2]},
+                                    {value:result.countList[3],name:result.itypeList[3]},
+                                ]
+                            },
+                            {
+                                name:'漏斗图',
+                                type:'funnel',
+                                width: '40%',
+                                height: '45%',
+                                left: '55%',
+                                top: '5%',
+                                funnelAlign: 'left',
+
+                                center: ['75%', '25%'],  // for pie
+
+                                data: [
+                                    {value:result.countList[0],name:result.itypeList[0]},
+                                    {value:result.countList[1],name:result.itypeList[1]},
+                                    {value:result.countList[2],name:result.itypeList[2]},
+                                    {value:result.countList[3],name:result.itypeList[3]},
+                                ]
+                            },
+                            {
+                                name: '金字塔',
+                                type:'funnel',
+                                width: '40%',
+                                height: '45%',
+                                left: '55%',
+                                top: '50%',
+                                sort: 'ascending',
+                                funnelAlign: 'left',
+
+                                center: ['75%', '75%'],  // for pie
+
+                                data: [
+                                    {value:result.countList[0],name:result.itypeList[0]},
+                                    {value:result.countList[1],name:result.itypeList[1]},
+                                    {value:result.countList[2],name:result.itypeList[2]},
+                                    {value:result.countList[3],name:result.itypeList[3]},
+                                ]
+                            }
+                        ]
+                    };
+                    var option5 = {
+                        title: {
+                            text: '',
+                            subtext: '纯属虚构',
+                            left: 'left',
+                            top: 'bottom'
+                        },
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: "{a} <br/>{b} : {c}%"
+                        },
+                        toolbox: {
+                            orient: 'vertical',
+                            top: 'center',
+                            feature: {
+                                dataView: {readOnly: false},
+                                restore: {},
+                                saveAsImage: {}
+                            }
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            left: 'left',
+                            data: result.itypeList
+                        },
+                        calculable: true,
+                        series: [
+                            {
+                                name: '漏斗图',
+                                type: 'funnel',
+                                width: '40%',
+                                height: '45%',
+                                left: '5%',
+                                top: '50%',
+                                data:[
+                                    {value:result.countList[0],name:result.itypeList[0]},
+                                    {value:result.countList[1],name:result.itypeList[1]},
+                                    {value:result.countList[2],name:result.itypeList[2]},
+                                    {value:result.countList[3],name:result.itypeList[3]},
+
+                                ]
+                            },
+                            {
+                                name: '金字塔',
+                                type: 'funnel',
+                                width: '40%',
+                                height: '45%',
+                                left: '5%',
+                                top: '5%',
+                                sort: 'ascending',
+                                data:[
+                                    {value:result.countList[0],name:result.itypeList[0]},
+                                    {value:result.countList[1],name:result.itypeList[1]},
+                                    {value:result.countList[2],name:result.itypeList[2]},
+                                    {value:result.countList[3],name:result.itypeList[3]},
+                                ]
+                            },
+                            {
+                                name: '漏斗图',
+                                type:'funnel',
+                                width: '40%',
+                                height: '45%',
+                                left: '55%',
+                                top: '5%',
+                                label: {
+                                    normal: {
+                                        position: 'left'
+                                    }
+                                },
+                                data:[
+                                    {value:result.countList[0],name:result.itypeList[0]},
+                                    {value:result.countList[1],name:result.itypeList[1]},
+                                    {value:result.countList[2],name:result.itypeList[2]},
+                                    {value:result.countList[3],name:result.itypeList[3]},
+                                ]
+                            },
+                            {
+                                name: '金字塔',
+                                type:'funnel',
+                                width: '40%',
+                                height: '45%',
+                                left: '55%',
+                                top: '50%',
+                                sort: 'ascending',
+                                label: {
+                                    normal: {
+                                        position: 'left'
+                                    }
+                                },
+                                data:[
+                                    {value:result.countList[0],name:result.itypeList[0]},
+                                    {value:result.countList[1],name:result.itypeList[1]},
+                                    {value:result.countList[2],name:result.itypeList[2]},
+                                    {value:result.countList[3],name:result.itypeList[3]},
+                                ]
+                            }
+                        ]
+                    };
+                    var option6 = {
+                        backgroundColor: '#2c343c',
+                        title: {
+                            text: '不同类型医疗设备',
+                            left: 'center',
+                            top: 20,
+                            textStyle: {
+                                color: '#ccc'
+                            }
+                        },
+
+                        tooltip : {
+                            trigger: 'item',
+                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                        },
+
+                        visualMap: {
+                            show: false,
+                            min: 80,
+                            max: 600,
+                            inRange: {
+                                colorLightness: [0, 1]
+                            }
+                        },
+                        series : [
+                            {
+                                name:'访问来源',
+                                type:'pie',
+                                radius : '55%',
+                                center: ['50%', '50%'],
+                                data:[
+                                    {value:result.countList[0],name:result.itypeList[0]},
+                                    {value:result.countList[1],name:result.itypeList[1]},
+                                    {value:result.countList[2],name:result.itypeList[2]},
+                                    {value:result.countList[3],name:result.itypeList[3]},
+                                ].sort(function (a, b) { return a.value - b.value; }),
+                                roseType: 'radius',
+                                label: {
+                                    normal: {
+                                        textStyle: {
+                                            color: 'rgba(255, 255, 255, 0.3)'
+                                        }
+                                    }
+                                },
+                                labelLine: {
+                                    normal: {
+                                        lineStyle: {
+                                            color: 'rgba(255, 255, 255, 0.3)'
+                                        },
+                                        smooth: 0.2,
+                                        length: 10,
+                                        length2: 20
+                                    }
+                                },
+                                itemStyle: {
+                                    normal: {
+                                        color: '#c23531',
+                                        shadowBlur: 200,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                },
+
+                                animationType: 'scale',
+                                animationEasing: 'elasticOut',
+                                animationDelay: function (idx) {
+                                    return Math.random() * 200;
+                                }
+                            }
+                        ]
+                    };
+
+                    mychart.setOption(option);
+                    mychart2.setOption(option2);
+                    mychart3.setOption(option3);
+                    mychart4.setOption(option4);
+                    mychart5.setOption(option5);
+                    mychart6.setOption(option6);
+
+                },
+
+                error: function () {
+                    layer.msg("请求服务器失败!");
+                }
+            });
+
+
+            $.ajax({
+                url: "equ/equTotal1.do",
+                success: function (data) {
+                    var result = JSON.parse(data);
+//                    alert(result.deptList);
+//                    alert(result.countList);
+                    var mychart = echarts.init(document.getElementById("bar1"));
+                    var mychart2 = echarts.init(document.getElementById("pie1"));
+                    var mychart3 = echarts.init(document.getElementById("rad1"));
+                    var mychart4 = echarts.init(document.getElementById("fun1"));
+                    var mychart5 = echarts.init(document.getElementById("fun2"));
+                    // 指定图表的配置项和数据
+                    var option = {
+                        title: {
+                            text: '各个科室设备数量柱状图'
+                        },
+                        tooltip: {},
+                        legend: {
+                            data: ['数量']
+                        },
+                        xAxis: {
+                            data: result.deptList
+                        },
+                        yAxis: {},
+                        series: [{
+                            name: '数量',
+                            type: 'bar',
+                            data: result.countList
+                        }]
+                    };
+                    var option2 = {
+                        title: {
+                            text:'',
+                        },
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            left: 'left',
+                            data:  result.deptList
+                        },
+                        series: [
+                            {
+                                name: '该科室设备所占比例',
+                                type: 'pie',
+                                radius: '55%',
+                                center: ['75%','40%'],
+                                data: [
+                                    {value:result.countList[0],name:result.deptList[0]},
+                                    {value:result.countList[1],name:result.deptList[1]},
+                                    {value:result.countList[2],name:result.deptList[2]},
+                                    {value:result.countList[3],name:result.deptList[3]},
+                                    {value:result.countList[4],name:result.deptList[4]},
+                                    {value:result.countList[5],name:result.deptList[5]},
+                                    {value:result.countList[6],name:result.deptList[6]},
+                                    {value:result.countList[7],name:result.deptList[7]},
+                                    {value:result.countList[8],name:result.deptList[8]},
+                                    {value:result.countList[9],name:result.deptList[9]},
+                                    {value:result.countList[10],name:result.deptList[10]},
+                                    {value:result.countList[11],name:result.deptList[11]},
+                                    {value:result.countList[12],name:result.deptList[12]},
+                                ],
+                                itemStyle: {
+                                    emphasis: {
+                                        shadowBlur: 10,
+                                        shadowOffsetX: 0,
+                                        shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                    }
+                                }
+                            }
+                        ]
+                    };
+                  var    option3 =
+                      {
+                          title:
+                              {
+                                  text: '各个科室设备数量多雷达图'
+                              },
+                          tooltip:
+                              {
+                                  trigger: 'axis'
+                              },
+                          legend: {
+                              x: 'center',
+                              data:['类型']
+                          },
+                          radar: [
+                              {
+                                  indicator: [
+                                      {text:result.deptList[0], max: 10},
+                                      {text:result.deptList[1], max:10},
+                                      {text:result.deptList[2], max: 10},
+                                      {text:result.deptList[3], max:10},
+                                      {text:result.deptList[4], max: 10},
+                                      {text:result.deptList[5], max:10},
+                                      {text:result.deptList[6], max: 10},
+                                      {text:result.deptList[7], max:10},
+                                      {text:result.deptList[8], max: 10},
+                                      {text:result.deptList[9], max:10},
+                                      {text:result.deptList[10], max: 10},
+                                      {text:result.deptList[11], max:10},
+                                      {text:result.deptList[12], max:10},
+                                  ],
+                                  center: ['75%','40%'],
+                                  radius: 80
+                              },
+                          ],
+                          series: [
+                              {
+                                  type: 'radar',
+                                  tooltip: {
+                                      trigger: 'item'
+                                  },
+                                  itemStyle: {normal: {areaStyle: {type: 'default'}}},
+                                  data: [
+                                      {
+                                          value: result.countList,
+                                            /*  [2,2,1,1,5,3,1,1,1,2,3,5,3],*/
+                                          name: '类型'
+                                      }
+                                  ]
+                              },
+                          ]
+                    };
+                    var option4 = {
+                        title: {
+                            text: '各个科室设备数量漏斗图',
+                            subtext: '纯属虚构',
+                            left: 'left',
+                            top: 'bottom'
+                        },
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: "{a} <br/>{b} : {c}%"
+                        },
+                        toolbox: {
+                            orient: 'vertical',
+                            top: 'center',
+                            feature: {
+                                dataView: {readOnly: false},
+                                restore: {},
+                                saveAsImage: {}
+                            }
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            left: 'left',
+                            data: result.deptList
+                        },
+                        calculable: true,
+                        series: [
+                            {
+                                name: '漏斗图',
+                                type: 'funnel',
+                                width: '40%',
+                                height: '45%',
+                                left: '5%',
+                                top: '50%',
+                                data:[
+                                    {value:result.countList[12],name:result.deptList[12]},
+                                    {value:result.countList[11],name:result.deptList[11]},
+                                    {value:result.countList[10],name:result.deptList[10]},
+                                    {value:result.countList[9],name:result.deptList[9]},
+                                    {value:result.countList[8],name:result.deptList[8]},
+                                    {value:result.countList[7],name:result.deptList[7]},
+                                    {value:result.countList[6],name:result.deptList[6]},
+                                    {value:result.countList[5],name:result.deptList[5]},
+                                    {value:result.countList[4],name:result.deptList[4]},
+                                    {value:result.countList[3],name:result.deptList[3]},
+                                    {value:result.countList[2],name:result.deptList[2]},
+                                    {value:result.countList[1],name:result.deptList[1]},
+                                    {value:result.countList[0],name:result.deptList[0]},
+
+                                ]
+                            },
+                            {
+                                name: '金字塔',
+                                type: 'funnel',
+                                width: '40%',
+                                height: '45%',
+                                left: '5%',
+                                top: '5%',
+                                sort: 'ascending',
+                                data:[
+                                    {value:result.countList[12],name:result.deptList[12]},
+                                    {value:result.countList[11],name:result.deptList[11]},
+                                    {value:result.countList[10],name:result.deptList[10]},
+                                    {value:result.countList[9],name:result.deptList[9]},
+                                    {value:result.countList[8],name:result.deptList[8]},
+                                    {value:result.countList[7],name:result.deptList[7]},
+                                    {value:result.countList[6],name:result.deptList[6]},
+                                    {value:result.countList[5],name:result.deptList[5]},
+                                    {value:result.countList[4],name:result.deptList[4]},
+                                    {value:result.countList[3],name:result.deptList[3]},
+                                    {value:result.countList[2],name:result.deptList[2]},
+                                    {value:result.countList[1],name:result.deptList[1]},
+                                    {value:result.countList[0],name:result.deptList[0]},
+                                ]
+                            },
+                            {
+                                name: '漏斗图',
+                                type:'funnel',
+                                width: '40%',
+                                height: '45%',
+                                left: '55%',
+                                top: '5%',
+                                label: {
+                                    normal: {
+                                        position: 'left'
+                                    }
+                                },
+                                data:[
+                                    {value:result.countList[12],name:result.deptList[12]},
+                                    {value:result.countList[11],name:result.deptList[11]},
+                                    {value:result.countList[10],name:result.deptList[10]},
+                                    {value:result.countList[9],name:result.deptList[9]},
+                                    {value:result.countList[8],name:result.deptList[8]},
+                                    {value:result.countList[7],name:result.deptList[7]},
+                                    {value:result.countList[6],name:result.deptList[6]},
+                                    {value:result.countList[5],name:result.deptList[5]},
+                                    {value:result.countList[4],name:result.deptList[4]},
+                                    {value:result.countList[3],name:result.deptList[3]},
+                                    {value:result.countList[2],name:result.deptList[2]},
+                                    {value:result.countList[1],name:result.deptList[1]},
+                                    {value:result.countList[0],name:result.deptList[0]},
+                                ]
+                            },
+                            {
+                                name: '金字塔',
+                                type:'funnel',
+                                width: '40%',
+                                height: '45%',
+                                left: '55%',
+                                top: '50%',
+                                sort: 'ascending',
+                                label: {
+                                    normal: {
+                                        position: 'left'
+                                    }
+                                },
+                                data:[
+                                    {value:result.countList[12],name:result.deptList[12]},
+                                    {value:result.countList[11],name:result.deptList[11]},
+                                    {value:result.countList[10],name:result.deptList[10]},
+                                    {value:result.countList[9],name:result.deptList[9]},
+                                    {value:result.countList[8],name:result.deptList[8]},
+                                    {value:result.countList[7],name:result.deptList[7]},
+                                    {value:result.countList[6],name:result.deptList[6]},
+                                    {value:result.countList[5],name:result.deptList[5]},
+                                    {value:result.countList[4],name:result.deptList[4]},
+                                    {value:result.countList[3],name:result.deptList[3]},
+                                    {value:result.countList[2],name:result.deptList[2]},
+                                    {value:result.countList[1],name:result.deptList[1]},
+                                    {value:result.countList[0],name:result.deptList[0]},
+                                ]
+                            }
+                        ]
+                    };
+                    var  option5 = {
+                        title: {
+                            text: '',
+                            subtext: '纯属虚构',
+                            left: 'left',
+                            top: 'bottom'
+                        },
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: "{a} <br/>{b} : {c}%"
+                        },
+                        toolbox: {
+                            show: true,
+                            orient: 'vertical',
+                            top: 'center',
+                            feature: {
+                                dataView: {readOnly: false},
+                                restore: {},
+                                saveAsImage: {}
+                            }
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            left: 'left',
+                            data:result.deptList
+                        },
+                        calculable: true,
+                        series: [
+                            {
+                                name: '漏斗图',
+                                type: 'funnel',
+                                width: '40%',
+                                height: '45%',
+                                left: '5%',
+                                top: '50%',
+                                funnelAlign: 'right',
+
+                                center: ['25%', '25%'],  // for pie
+
+                                data:[
+                                    {value:result.countList[0],name:result.deptList[0]},
+                                    {value:result.countList[1],name:result.deptList[1]},
+                                    {value:result.countList[2],name:result.deptList[2]},
+                                    {value:result.countList[3],name:result.deptList[3]},
+                                    {value:result.countList[4],name:result.deptList[4]},
+                                    {value:result.countList[5],name:result.deptList[5]},
+                                    {value:result.countList[6],name:result.deptList[6]},
+                                    {value:result.countList[7],name:result.deptList[7]},
+                                    {value:result.countList[8],name:result.deptList[8]},
+                                    {value:result.countList[9],name:result.deptList[9]},
+                                    {value:result.countList[10],name:result.deptList[10]},
+                                    {value:result.countList[11],name:result.deptList[11]},
+                                    {value:result.countList[12],name:result.deptList[12]},
+                                ]
+                            },
+                            {
+                                name: '金字塔',
+                                type:'funnel',
+                                width: '40%',
+                                height: '45%',
+                                left: '5%',
+                                top: '5%',
+                                sort: 'ascending',
+                                funnelAlign: 'right',
+
+                                center: ['25%', '75%'],  // for pie
+
+                                data:[
+                                    {value:result.countList[0],name:result.deptList[0]},
+                                    {value:result.countList[1],name:result.deptList[1]},
+                                    {value:result.countList[2],name:result.deptList[2]},
+                                    {value:result.countList[3],name:result.deptList[3]},
+                                    {value:result.countList[4],name:result.deptList[4]},
+                                    {value:result.countList[5],name:result.deptList[5]},
+                                    {value:result.countList[6],name:result.deptList[6]},
+                                    {value:result.countList[7],name:result.deptList[7]},
+                                    {value:result.countList[8],name:result.deptList[8]},
+                                    {value:result.countList[9],name:result.deptList[9]},
+                                    {value:result.countList[10],name:result.deptList[10]},
+                                    {value:result.countList[11],name:result.deptList[11]},
+                                    {value:result.countList[12],name:result.deptList[12]},
+                                ]
+                            },
+                            {
+                                name:'漏斗图',
+                                type:'funnel',
+                                width: '40%',
+                                height: '45%',
+                                left: '55%',
+                                top: '5%',
+                                funnelAlign: 'left',
+
+                                center: ['75%', '25%'],  // for pie
+
+                                data: [
+                                    {value:result.countList[0],name:result.deptList[0]},
+                                    {value:result.countList[1],name:result.deptList[1]},
+                                    {value:result.countList[2],name:result.deptList[2]},
+                                    {value:result.countList[3],name:result.deptList[3]},
+                                    {value:result.countList[4],name:result.deptList[4]},
+                                    {value:result.countList[5],name:result.deptList[5]},
+                                    {value:result.countList[6],name:result.deptList[6]},
+                                    {value:result.countList[7],name:result.deptList[7]},
+                                    {value:result.countList[8],name:result.deptList[8]},
+                                    {value:result.countList[9],name:result.deptList[9]},
+                                    {value:result.countList[10],name:result.deptList[10]},
+                                    {value:result.countList[11],name:result.deptList[11]},
+                                    {value:result.countList[12],name:result.deptList[12]},
+                                ]
+                            },
+                            {
+                                name: '金字塔',
+                                type:'funnel',
+                                width: '40%',
+                                height: '45%',
+                                left: '55%',
+                                top: '50%',
+                                sort: 'ascending',
+                                funnelAlign: 'left',
+
+                                center: ['75%', '75%'],  // for pie
+
+                                data: [
+                                    {value:result.countList[0],name:result.deptList[0]},
+                                    {value:result.countList[1],name:result.deptList[1]},
+                                    {value:result.countList[2],name:result.deptList[2]},
+                                    {value:result.countList[3],name:result.deptList[3]},
+                                    {value:result.countList[4],name:result.deptList[4]},
+                                    {value:result.countList[5],name:result.deptList[5]},
+                                    {value:result.countList[6],name:result.deptList[6]},
+                                    {value:result.countList[7],name:result.deptList[7]},
+                                    {value:result.countList[8],name:result.deptList[8]},
+                                    {value:result.countList[9],name:result.deptList[9]},
+                                    {value:result.countList[10],name:result.deptList[10]},
+                                    {value:result.countList[11],name:result.deptList[11]},
+                                    {value:result.countList[12],name:result.deptList[12]},
+                                ]
+                            }
+                        ]
+                    };
+                    mychart.setOption(option);
+                    mychart2.setOption(option2);
+                    mychart3.setOption(option3);
+                    mychart4.setOption(option4);
+                    mychart5.setOption(option5);
+
+                },
+                error: function () {
+                    layer.msg("请求服务器失败!");
+                }
+            });
+
+            $.ajax({
+                url: "equ/equTotal2.do",
+                success: function (data) {
+                    var result = JSON.parse(data);
+                    var mychart = echarts.init(document.getElementById("bar3"));
+                    var mychart1 = echarts.init(document.getElementById("ros1"));
+                    // 指定图表的配置项和数据
+                    var option = {
+                        title: {
+                            text: '医疗设备数量柱状图'
+                        },
+                        tooltip: {},
+                        legend: {
+                            data: ['数量']
+                        },
+                        xAxis: {
+                            data: result.inameList
+                        },
+                        yAxis: {},
+                        series: [{
+                            name: '数量',
+                            type: 'bar',
+                            data: result.countList
+                        }]
+                    };
+                    var option1= {
+                        title : {
+                            text: ' 医疗设备数量玫瑰图',
+                            subtext: '',
+                            x:'center'
+                        },
+                        tooltip : {
+                            trigger: 'item',
+                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                        },
+                        legend: {
+                            x : 'center',
+                            y : 'bottom',
+                            data:result.inameList
+                        },
+                        toolbox: {
+                            show : true,
+                            feature : {
+                                mark : {show: true},
+                                dataView : {show: true, readOnly: false},
+                                magicType : {
+                                    show: true,
+                                    type: ['pie', 'funnel']
+                                },
+                                restore : {show: true},
+                                saveAsImage : {show: true}
+                            }
+                        },
+                        calculable : true,
+                        series : [
+                            {
+                                name:'半径模式',
+                                type:'pie',
+                                radius : [20, 110],
+                                center : ['25%', '50%'],
+                                roseType : 'radius',
+                                label: {
+                                    normal: {
+                                        show: false
+                                    },
+                                    emphasis: {
+                                        show: true
+                                    }
+                                },
+                                lableLine: {
+                                    normal: {
+                                        show: false
+                                    },
+                                    emphasis: {
+                                        show: true
+                                    }
+                                },
+                                data:[
+                                    {value:result.countList[0], name:result.inameList[0]},
+                                    {value:result.countList[1], name:result.inameList[1]},
+                                    {value:result.countList[2], name:result.inameList[2]},
+                                    {value:result.countList[3], name:result.inameList[3]},
+                                    {value:result.countList[4], name:result.inameList[4]},
+                                    {value:result.countList[5], name:result.inameList[5]},
+                                    {value:result.countList[6], name:result.inameList[6]},
+                                    {value:result.countList[7], name:result.inameList[7]},
+                                    {value:result.countList[8], name:result.inameList[8]},
+                                    {value:result.countList[9], name:result.inameList[9]},
+                                    {value:result.countList[10], name:result.inameList[10]},
+                                    {value:result.countList[11], name:result.inameList[11]},
+                                    {value:result.countList[12], name:result.inameList[12]},
+                                    {value:result.countList[13], name:result.inameList[13]},
+                                    {value:result.countList[14], name:result.inameList[14]},
+                                ]
+                            },
+                            {
+                                name:'面积模式',
+                                type:'pie',
+                                radius : [30, 110],
+                                center : ['75%', '50%'],
+                                roseType : 'area',
+                                data:[
+                                    {value:result.countList[0], name:result.inameList[0]},
+                                    {value:result.countList[1], name:result.inameList[1]},
+                                    {value:result.countList[2], name:result.inameList[2]},
+                                    {value:result.countList[3], name:result.inameList[3]},
+                                    {value:result.countList[4], name:result.inameList[4]},
+                                    {value:result.countList[5], name:result.inameList[5]},
+                                    {value:result.countList[6], name:result.inameList[6]},
+                                    {value:result.countList[7], name:result.inameList[7]},
+                                    {value:result.countList[8], name:result.inameList[8]},
+                                    {value:result.countList[9], name:result.inameList[9]},
+                                    {value:result.countList[10], name:result.inameList[10]},
+                                    {value:result.countList[11], name:result.inameList[11]},
+                                    {value:result.countList[12], name:result.inameList[12]},
+                                    {value:result.countList[13], name:result.inameList[13]},
+                                    {value:result.countList[14], name:result.inameList[14]},
+                                ]
+                            }
+                        ]
+                    };
+
+                    mychart.setOption(option);
+                    mychart1.setOption(option1);
+            },
+                error: function () {
+                layer.msg("请求服务器失败!");
+            }
+        });
+
+            $.ajax({
+                url: "equ/equTotal3.do",
+                success: function (data) {
+                    var result = JSON.parse(data);
+                    var mychart = echarts.init(document.getElementById("bar4"));
+                    var mychart1 = echarts.init(document.getElementById("ros2"));
+                    var mychart2 = echarts.init(document.getElementById("hx1"));
+                    // 指定图表的配置项和数据
+                    var option = {
+                        title: {
+                            text: '医疗设备数量柱状图'
+                        },
+                        tooltip: {},
+                        legend: {
+                            data: ['数量']
+                        },
+                        xAxis: {
+                            data:result.repaircycleList
+                        },
+                        yAxis: {},
+                        series: [{
+                            name: '数量',
+                            type: 'bar',
+                            data:result.countList
+                        }]
+                    };
+                    var option1= {
+                        title : {
+                            text: ' 维修周期数量玫瑰图',
+                            subtext: '',
+                            x:'center'
+                        },
+                        tooltip : {
+                            trigger: 'item',
+                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                        },
+                        legend: {
+                            x : 'center',
+                            y : 'bottom',
+                            data:result.repaircycleList
+                        },
+                        toolbox: {
+                            show : true,
+                            feature : {
+                                mark : {show: true},
+                                dataView : {show: true, readOnly: false},
+                                magicType : {
+                                    show: true,
+                                    type: ['pie', 'funnel']
+                                },
+                                restore : {show: true},
+                                saveAsImage : {show: true}
+                            }
+                        },
+                        calculable : true,
+                        series : [
+                            {
+                                name:'半径模式',
+                                type:'pie',
+                                radius : [20, 110],
+                                center : ['25%', '50%'],
+                                roseType : 'radius',
+                                label: {
+                                    normal: {
+                                        show: false
+                                    },
+                                    emphasis: {
+                                        show: true
+                                    }
+                                },
+                                lableLine: {
+                                    normal: {
+                                        show: false
+                                    },
+                                    emphasis: {
+                                        show: true
+                                    }
+                                },
+                                data:[
+                                    {value:result.countList[0], name:result.repaircycleList[0]},
+                                    {value:result.countList[1], name:result.repaircycleList[1]},
+                                    {value:result.countList[2], name:result.repaircycleList[2]},
+                                    {value:result.countList[3], name:result.repaircycleList[3]},
+                                ]
+                            },
+                            {
+                                name:'面积模式',
+                                type:'pie',
+                                radius : [30, 110],
+                                center : ['75%', '50%'],
+                                roseType : 'area',
+                                data:[
+                                    {value:result.countList[0], name:result.repaircycleList[0]},
+                                    {value:result.countList[1], name:result.repaircycleList[1]},
+                                    {value:result.countList[2], name:result.repaircycleList[2]},
+                                    {value:result.countList[3], name:result.repaircycleList[3]},
+                                ]
+                            }
+                        ]
+                    };
+                    var option2 = {
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: "{a} <br/>{b}: {c} ({d}%)"
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            x: 'left',
+                            data:result.repaircycleList
+                        },
+                        series: [
+                            {
+                                name:'访问来源',
+                                type:'pie',
+                                radius: ['50%', '70%'],
+                                avoidLabelOverlap: false,
+                                label: {
+                                    normal: {
+                                        show: false,
+                                        position: 'center'
+                                    },
+                                    emphasis: {
+                                        show: true,
+                                        textStyle: {
+                                            fontSize: '30',
+                                            fontWeight: 'bold'
+                                        }
+                                    }
+                                },
+                                labelLine: {
+                                    normal: {
+                                        show: false
+                                    }
+                                },
+                                data:[
+                                    {value:result.countList[0], name:result.repaircycleList[0]},
+                                    {value:result.countList[1], name:result.repaircycleList[1]},
+                                    {value:result.countList[2], name:result.repaircycleList[2]},
+                                    {value:result.countList[3], name:result.repaircycleList[3]},
+                                ]
+                            }
+                        ]
+                    };
+
+
+                    mychart.setOption(option);
+                    mychart1.setOption(option1);
+                    mychart2.setOption(option2);
+                },
+                error: function () {
+                    layer.msg("请求服务器失败!");
+                }
+            });
+            $.ajax({
+                url: "equ/equTotal4.do",
+                success: function (data) {
+                    var result = JSON.parse(data);
+                    var mychart = echarts.init(document.getElementById("bar5"));
+                    var mychart1 = echarts.init(document.getElementById("ros3"));
+                    var mychart2 = echarts.init(document.getElementById("line1"));
+                    // 指定图表的配置项和数据
+                    var option = {
+                        title: {
+                            text: ''
+                        },
+                        tooltip: {},
+                        legend: {
+                            data: ['数量']
+                        },
+                        xAxis: {
+                            data:result.manuList
+                        },
+                        yAxis: {},
+                        series: [{
+                            name: '数量',
+                            type: 'bar',
+                            data:result.countList
+                        }]
+                    };
+                    var option1= {
+                        title : {
+                            text: ' 维修周期数量玫瑰图',
+                            subtext: '',
+                            x:'center'
+                        },
+                        tooltip : {
+                            trigger: 'item',
+                            formatter: "{a} <br/>{b} : {c} ({d}%)"
+                        },
+                        legend: {
+                            x : 'center',
+                            y : 'bottom',
+                            data:result.manuList
+                        },
+                        toolbox: {
+                            show : true,
+                            feature : {
+                                mark : {show: true},
+                                dataView : {show: true, readOnly: false},
+                                magicType : {
+                                    show: true,
+                                    type: ['pie', 'funnel']
+                                },
+                                restore : {show: true},
+                                saveAsImage : {show: true}
+                            }
+                        },
+                        calculable : true,
+                        series : [
+                            {
+                                name:'半径模式',
+                                type:'pie',
+                                radius : [20, 110],
+                                center : ['25%', '50%'],
+                                roseType : 'radius',
+                                label: {
+                                    normal: {
+                                        show: false
+                                    },
+                                    emphasis: {
+                                        show: true
+                                    }
+                                },
+                                lableLine: {
+                                    normal: {
+                                        show: false
+                                    },
+                                    emphasis: {
+                                        show: true
+                                    }
+                                },
+                                data:[
+                                    {value:result.countList[0], name:result.manuList[0]},
+                                    {value:result.countList[1], name:result.manuList[1]},
+                                    {value:result.countList[2], name:result.manuList[2]},
+                                    {value:result.countList[3], name:result.manuList[3]},
+                                ]
+                            },
+                            {
+                                name:'面积模式',
+                                type:'pie',
+                                radius : [30, 110],
+                                center : ['75%', '50%'],
+                                roseType : 'area',
+                                data:[
+                                    {value:result.countList[0], name:result.manuList[0]},
+                                    {value:result.countList[1], name:result.manuList[1]},
+                                    {value:result.countList[2], name:result.manuList[2]},
+                                    {value:result.countList[3], name:result.manuList[3]},
+                                ]
+                            }
+                        ]
+                    };
+                    var option2 = {
+                        xAxis: {
+                            type: 'category',
+                            data:result.manuList
+                        },
+                        yAxis: {
+                            type: 'value'
+                        },
+                        series: [{
+                            data: result.countList,
+                            type: 'line'
+                        }]
+                    };
+
+                    mychart.setOption(option);
+                    mychart1.setOption(option1);
+                    mychart2.setOption(option2);
+                },
+                error: function () {
+                    layer.msg("请求服务器失败!");
+                }
+            });
+        }
+
+    </script>
+</head>
+<body>
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+  <!--  <legend>医疗设备统计分析</legend>-->
+</fieldset>
+<div class="layui-tab">
+    <ul class="layui-tab-title">
+        <li class="layui-this  layui-bg-red" >不同类型医疗设备分析</li>
+        <li class="layui-bg-gray">各个科室医疗设备分析</li>
+        <li class="layui-bg-green">每种医疗设备数量分析</li>
+        <li class="layui-bg-gray">医疗设备维修周期分析</li>
+        <li  class="layui-bg-red">医疗设备厂商分析</li>
+    </ul>
+    <div class="layui-tab-content">
+        <div class="layui-tab-item layui-show">
+
+            <div class="row">
+                <div class="layui-col-xs6">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            不同类型医疗设备数量分析
+                        </div>
+                        <div class="layui-card-body" id="bar" style="height: 400px;width: 100%">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-xs6">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            不同类型医疗设备数量分析
+                        </div>
+                        <div class="layui-card-body" id="pie" style="height: 400px;width: 100%">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="layui-col-xs12">
+                    <div class="layui-card">
+                        <div class="layui-card-header" >
+                            不同类型医疗设备数量分析
+                        </div>
+                        <div class="layui-card-body" id="fun" style="height: 400px;width:100%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="layui-col-xs12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            不同类型医疗设备数量分析
+                        </div>
+                        <div class="layui-card-body" id="fun3" style="height: 400px;width:100%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="layui-col-xs6">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            不同类型医疗设备数量分析
+                        </div>
+                        <div class="layui-card-body" id="rad" style="height: 400px;width: 60%">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-xs6">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            不同类型医疗设备数量分析
+                        </div>
+                        <div class="layui-card-body" id="item1" style="height: 400px;width: 60%">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        <div class="layui-tab-item layui-show" >
+            <div class="row">
+                <div class="layui-col-xs12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            各个科室医疗设备数量分析
+                        </div>
+                        <div class="layui-card-body" id="rad1" style="height: 400px;width:60%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="layui-col-xs12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            各个科室医疗设备数量分析
+                        </div>
+                        <div class="layui-card-body" id="pie1" style="height: 400px;width: 60%">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="layui-col-xs12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            各个科室医疗设备数量分析
+                        </div>
+                        <div class="layui-card-body" id="bar1" style="height: 400px;width:100%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="layui-col-xs12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            各个科室医疗设备数量分析
+                        </div>
+                        <div class="layui-card-body" id="fun2" style="height: 400px;width:100%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="layui-col-xs12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            各个科室医疗设备数量分析
+                        </div>
+                        <div class="layui-card-body" id="fun1" style="height: 400px;width:100%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="layui-tab-item layui-show">
+
+
+            <div class="row">
+                <div class="layui-col-xs12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            医疗设备数量柱状图
+                        </div>
+                        <div class="layui-card-body" id="bar3" style="height: 400px;width:100%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="layui-col-xs12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            医疗设备数量玫瑰图
+                        </div>
+                        <div class="layui-card-body" id="ros1" style="height: 400px;width:100%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-tab-item layui-show">
+
+            <div class="row">
+               <div class="layui-col-xs6">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            医疗设备维修周期柱状图
+                        </div>
+                        <div class="layui-card-body" id="bar4" style="height: 400px;width:100%">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-xs6">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            医疗设备维修周期环形图
+                        </div>
+                        <div class="layui-card-body" id="hx1" style="height: 400px;width:100%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="layui-col-xs12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            医疗设备维修周期玫瑰图
+                        </div>
+                        <div class="layui-card-body" id="ros2" style="height: 400px;width:100%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-tab-item layui-show">
+
+            <div class="row">
+                <div class="layui-col-xs6">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            医疗设备厂商柱状图
+                        </div>
+                        <div class="layui-card-body" id="bar5" style="height: 400px;width:100%">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-xs6">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            医疗设备厂商柱状图
+                        </div>
+                        <div class="layui-card-body" id="line1" style="height: 400px;width:100%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="layui-col-xs12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            医疗设备厂商玫瑰图
+                        </div>
+                        <div class="layui-card-body" id="ros3" style="height: 400px;width:100%">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
